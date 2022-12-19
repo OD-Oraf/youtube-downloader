@@ -1,18 +1,24 @@
 from pytube import YouTube
 import os
 
-yt = YouTube(str(input("Enter the URL of the video you want to download: \n>> ")))
-video = yt.streams.filter(only_audio=True, abr='320kpbs').first()
 
-print("enter the destination (leave blank for current directory)")
-# destination = str(input(">> ")) or '.'
-destination = '../songs'
+def download_mp3(url):
+    yt = YouTube(str(url))
+    video = yt.streams.filter(only_audio=True).last()
 
-out_file = video.download(output_path=destination)
+    destination = "/home/od/Documents/Python/youtubeDownload/songs"
 
-base, ext = os.path.splitext(out_file)
-new_file = base + '.mp3'
-os.rename(out_file, new_file)
+    out_file = video.download(output_path=destination)
 
-print(yt.title + " has been successfully downloaded")
+    base, ext = os.path.splitext(out_file)
+    new_file = base + '.mp3'
+    os.rename(out_file, new_file)
 
+    print(yt.title + " has been successfully downloaded")
+
+
+urls = open("urls.txt", "r")
+for url in urls:
+    download_mp3(url)
+
+urls.close()
