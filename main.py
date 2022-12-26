@@ -1,17 +1,30 @@
-import youtube_dl
+from pytube import YouTube
+import os
 
-def download_ytvid_as_mp3():
-    video_url = input("enter url of youtube video:")
-    video_info = youtube_dl.YoutubeDL().extract_info(url = video_url,download=False)
-    filename = f"{video_info['title']}.mp3"
-    options={
-        'format':'bestaudio/best',
-        'keepvideo':False,
-        'outtmpl':filename,
-    }
 
-    with youtube_dl.YoutubeDL(options) as ydl:
-        ydl.download([video_info['webpage_url']])
+def download_mp3(url):
+    yt = YouTube(str(url))
+    video = yt.streams.filter(only_audio=True).last()
 
-    print("Download complete... {}".format(filename))
-download_ytvid_as_mp3()
+    destination = "/home/od/Documents/Python/youtubeDownload/songs"
+
+    out_file = video.download(output_path=destination)
+
+    base, ext = os.path.splitext(out_file)
+    new_file = base + '.mp3'
+    os.rename(out_file, new_file)
+
+    print(yt.title + " has been successfully downloaded")
+
+def clear_file(urls):
+    urls.truncate(0)
+
+
+file = "urls.txt"
+urls = open(file, "r+")
+for url in urls:
+    download_mp3(url)
+
+clear_file(urls)
+
+urls.close()
